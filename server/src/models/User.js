@@ -59,6 +59,16 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    analyticsConsent: {
+      type: Boolean,
+      default: true, // Transparent consent tracking
+    },
+    analyticsPreferences: {
+      trackReading: { type: Boolean, default: true },
+      trackVideo: { type: Boolean, default: true },
+      trackQuiz: { type: Boolean, default: true },
+      allowAnonymizedResearch: { type: Boolean, default: true },
+    },
   },
   {
     timestamps: true,

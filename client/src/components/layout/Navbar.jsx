@@ -11,6 +11,10 @@ import {
   LogOut,
   User as UserIcon,
   ChevronDown,
+  Settings,
+  GraduationCap,
+  Shield,
+  BarChart2,
 } from 'lucide-react';
 import { NAV_LINKS } from '../../data/navigation.js';
 import useHealthCheck from '../../hooks/useHealthCheck.js';
@@ -29,7 +33,8 @@ export const Navbar = () => {
   const handleLogout = async () => {
     await logout();
     setUserDropdownOpen(false);
-    navigate('/login');
+    setMobileMenuOpen(false);
+    navigate('/', { replace: true });
   };
 
   // Helper to extract user initials for avatar
@@ -63,7 +68,11 @@ export const Navbar = () => {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
+            {NAV_LINKS.filter((link) => {
+              if (link.publicOnly && isAuthenticated) return false;
+              if (link.protected && !isAuthenticated) return false;
+              return true;
+            }).map((link) => (
               <NavLink
                 key={link.path}
                 to={link.path}
@@ -78,39 +87,57 @@ export const Navbar = () => {
                 {link.name}
               </NavLink>
             ))}
+
+            {isAuthenticated && user?.role === 'admin' && (
+              <NavLink
+                to="/admin/courses"
+                className={({ isActive }) =>
+                  `px-3.5 py-2 text-sm font-medium rounded-lg transition-all duration-150 flex items-center gap-1.5 ${
+                    isActive
+                      ? 'text-neuro-purple bg-neuro-lavender/60 font-semibold'
+                      : 'text-neuro-textMuted hover:text-neuro-text hover:bg-slate-50'
+                  }`
+                }
+              >
+                <Shield className="w-3.5 h-3.5 text-neuro-purple" />
+                <span>Admin</span>
+              </NavLink>
+            )}
           </nav>
 
           {/* System Telemetry & Auth Section */}
           <div className="hidden sm:flex items-center gap-3">
-            {/* Live API & DB Indicator */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-neuro-border text-xs">
-              <span className="flex items-center gap-1.5 text-neuro-textMuted">
-                <Activity className="w-3.5 h-3.5 text-neuro-purple" />
-                API:
-                {loading ? (
-                  <span className="text-slate-400">...</span>
-                ) : isApiHealthy ? (
-                  <span className="text-emerald-600 font-semibold">Online</span>
-                ) : (
-                  <span className="text-rose-500 font-semibold">Offline</span>
-                )}
-              </span>
+            {/* Live API & DB Indicator (Only displayed before login) */}
+            {!isAuthenticated && (
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-neuro-border text-xs">
+                <span className="flex items-center gap-1.5 text-neuro-textMuted">
+                  <Activity className="w-3.5 h-3.5 text-neuro-purple" />
+                  API:
+                  {loading ? (
+                    <span className="text-slate-400">...</span>
+                  ) : isApiHealthy ? (
+                    <span className="text-emerald-600 font-semibold">Online</span>
+                  ) : (
+                    <span className="text-rose-500 font-semibold">Offline</span>
+                  )}
+                </span>
 
-              <span className="text-slate-300">|</span>
+                <span className="text-slate-300">|</span>
 
-              <span className="flex items-center gap-1.5 text-neuro-textMuted">
-                <Database className="w-3.5 h-3.5 text-neuro-purpleLight" />
-                DB:
-                {isDbHealthy ? (
-                  <span className="text-emerald-600 font-semibold flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    Ready
-                  </span>
-                ) : (
-                  <span className="text-amber-500 font-semibold">Standby</span>
-                )}
-              </span>
-            </div>
+                <span className="flex items-center gap-1.5 text-neuro-textMuted">
+                  <Database className="w-3.5 h-3.5 text-neuro-purpleLight" />
+                  DB:
+                  {isDbHealthy ? (
+                    <span className="text-emerald-600 font-semibold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Ready
+                    </span>
+                  ) : (
+                    <span className="text-amber-500 font-semibold">Standby</span>
+                  )}
+                </span>
+              </div>
+            )}
 
             {/* Authenticated State vs Public State */}
             {isAuthenticated && user ? (
@@ -152,8 +179,63 @@ export const Navbar = () => {
                         className="flex items-center gap-2 px-4 py-2 text-xs text-neuro-text hover:bg-slate-50 transition-colors"
                       >
                         <UserIcon className="w-4 h-4 text-neuro-purple" />
-                        Student Dashboard
+                        <span>Student Dashboard</span>
                       </Link>
+
+                      <Link
+                        to="/my-courses"
+                        onClick={() => setUserDropdownOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-xs text-neuro-text hover:bg-slate-50 transition-colors"
+                      >
+                        <GraduationCap className="w-4 h-4 text-neuro-purple" />
+                        <span>My Courses</span>
+                      </Link>
+
+                      <Link
+                        to="/analytics"
+                        onClick={() => setUserDropdownOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-xs text-neuro-text hover:bg-slate-50 transition-colors"
+                      >
+                        <BarChart2 className="w-4 h-4 text-neuro-purple" />
+                        <span>Learning Analytics</span>
+                      </Link>
+
+                      {user?.role === 'admin' && (
+                        <Link
+                          to="/admin/courses"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-xs text-neuro-purple font-semibold hover:bg-neuro-lavender/50 transition-colors"
+                        >
+                          <Shield className="w-4 h-4 text-neuro-purple" />
+                          <span>Admin Portal</span>
+                        </Link>
+                      )}
+
+                      <div
+                        className="flex items-center justify-between px-4 py-2 text-xs text-neuro-textMuted cursor-not-allowed select-none"
+                        title="Profile management module (Upcoming)"
+                      >
+                        <div className="flex items-center gap-2">
+                          <UserIcon className="w-4 h-4 text-slate-400" />
+                          <span>My Profile</span>
+                        </div>
+                        <span className="text-[10px] uppercase font-semibold tracking-wider px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">
+                          Soon
+                        </span>
+                      </div>
+
+                      <div
+                        className="flex items-center justify-between px-4 py-2 text-xs text-neuro-textMuted cursor-not-allowed select-none"
+                        title="Account settings & preferences (Upcoming)"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Settings className="w-4 h-4 text-slate-400" />
+                          <span>Account Settings</span>
+                        </div>
+                        <span className="text-[10px] uppercase font-semibold tracking-wider px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">
+                          Soon
+                        </span>
+                      </div>
                     </div>
 
                     <div className="pt-1 border-t border-neuro-border">
@@ -163,7 +245,7 @@ export const Navbar = () => {
                         className="w-full flex items-center gap-2 px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 transition-colors font-semibold"
                       >
                         <LogOut className="w-4 h-4 text-rose-500" />
-                        Sign Out
+                        Logout
                       </button>
                     </div>
                   </div>
@@ -214,19 +296,24 @@ export const Navbar = () => {
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-neuro-text">{user.fullName}</p>
-                  <p className="text-[11px] text-neuro-textMuted">@{user.username}</p>
+                  <p className="text-[11px] text-neuro-textMuted">{user.email}</p>
                 </div>
               </div>
               <button
                 onClick={handleLogout}
-                className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg text-xs font-semibold flex items-center gap-1"
+                className="px-2.5 py-1 text-rose-600 hover:bg-rose-50 rounded-lg text-xs font-semibold flex items-center gap-1 border border-rose-200"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Logout</span>
               </button>
             </div>
           )}
 
-          {NAV_LINKS.map((link) => (
+          {NAV_LINKS.filter((link) => {
+            if (link.publicOnly && isAuthenticated) return false;
+            if (link.protected && !isAuthenticated) return false;
+            return true;
+          }).map((link) => (
             <NavLink
               key={link.path}
               to={link.path}
@@ -242,6 +329,20 @@ export const Navbar = () => {
               {link.name}
             </NavLink>
           ))}
+
+          {isAuthenticated && user?.role === 'admin' && (
+            <NavLink
+              to="/admin/courses"
+              onClick={() => setMobileMenuOpen(false)}
+              className={({ isActive }) =>
+                `block px-3 py-2 text-base font-semibold rounded-lg text-neuro-purple ${
+                  isActive ? 'bg-neuro-lavender' : 'hover:bg-slate-50'
+                }`
+              }
+            >
+              Course Admin Portal
+            </NavLink>
+          )}
 
           {!isAuthenticated && (
             <div className="pt-3 border-t border-neuro-border flex flex-col gap-2">

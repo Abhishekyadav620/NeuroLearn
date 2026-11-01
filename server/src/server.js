@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import app from './app.js';
 import { ENV, validateEnv } from './config/env.js';
 import { connectDB, disconnectDB } from './config/db.js';
@@ -10,9 +11,20 @@ if (warnings.length > 0) {
 }
 
 // Connect to MongoDB
-connectDB().catch((err) => {
-  logger.warn('Initial MongoDB connection attempt returned an error:', err.message);
-});
+connectDB()
+  .then(async (conn) => {
+    if (conn && mongoose.connection.readyState === 1) {
+      try {
+        const { seedInitialCourses } = await import('./utils/seedCourses.js');
+        await seedInitialCourses();
+      } catch (seedErr) {
+        logger.warn('Seed execution notice:', seedErr.message);
+      }
+    }
+  })
+  .catch((err) => {
+    logger.warn('Initial MongoDB connection attempt returned an error:', err.message);
+  });
 
 // Start Express server
 const server = app.listen(ENV.PORT, () => {

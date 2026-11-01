@@ -7,24 +7,22 @@ const API_BASE_URL =
   '/api';
 
 /**
- * Pre-configured Axios instance for the NeuroLearn client
+ * Pre-configured Axios instance for NeuroLearn with HttpOnly Cookie credentials
  */
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
+  withCredentials: true, // Enables sending and receiving HttpOnly cookies across origins
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
 });
 
-// Request interceptor for attaching bearer token if present
+// Request interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('neurolearn_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // HttpOnly cookies are attached automatically by the browser when withCredentials: true.
     return config;
   },
   (error) => {
@@ -39,6 +37,13 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     let friendlyMessage = error.response?.data?.message;
+    const errorsList = error.response?.data?.errors;
+
+    if (Array.isArray(errorsList) && errorsList.length > 0) {
+      if (!friendlyMessage || friendlyMessage === 'Validation failed') {
+        friendlyMessage = errorsList.join('. ');
+      }
+    }
 
     if (!friendlyMessage) {
       if (error.code === 'ECONNABORTED' || error.message?.toLowerCase().includes('timeout')) {
@@ -53,9 +58,11 @@ apiClient.interceptors.response.use(
     const customError = {
       status: error.response?.status || 500,
       message: friendlyMessage,
+      errors: errorsList || [],
       data: error.response?.data?.data || null,
       raw: error,
     };
+
     return Promise.reject(customError);
   }
 );

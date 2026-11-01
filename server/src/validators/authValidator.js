@@ -70,11 +70,11 @@ export const validateLoginInput = (data = {}) => {
   const { emailOrUsername, password } = data;
 
   if (!emailOrUsername || typeof emailOrUsername !== 'string' || !emailOrUsername.trim()) {
-    errors.push('Email or username is required');
+    errors.push('Please enter your email address or username');
   }
 
-  if (!password || typeof password !== 'string') {
-    errors.push('Password is required');
+  if (!password || typeof password !== 'string' || !password.trim()) {
+    errors.push('Please enter your password');
   }
 
   return {

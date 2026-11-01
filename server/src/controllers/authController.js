@@ -1,5 +1,6 @@
 import * as authService from '../services/authService.js';
 import { successResponse, errorResponse } from '../utils/apiResponse.js';
+import { sendAuthCookie, clearAuthCookie } from '../utils/generateToken.js';
 
 /**
  * Controller: Register a new student account
@@ -7,19 +8,28 @@ import { successResponse, errorResponse } from '../utils/apiResponse.js';
  */
 export const register = async (req, res, next) => {
   try {
-    const { fullName, username, email, password } = req.body;
+    const { fullName, username, email, password, role } = req.body;
 
     const result = await authService.register({
       fullName,
       username,
       email,
       password,
+      role,
     });
+
+    // Set secure HttpOnly session cookie
+    if (result.token) {
+      sendAuthCookie(res, result.token);
+    }
 
     return successResponse(res, {
       statusCode: 201,
       message: 'Account created successfully',
-      data: result,
+      data: {
+        user: result.user,
+        token: result.token, // For documentation / API testing tools
+      },
     });
   } catch (error) {
     if (error.statusCode) {
@@ -46,10 +56,18 @@ export const login = async (req, res, next) => {
       password,
     });
 
+    // Set secure HttpOnly session cookie
+    if (result.token) {
+      sendAuthCookie(res, result.token);
+    }
+
     return successResponse(res, {
       statusCode: 200,
       message: 'Login successful',
-      data: result,
+      data: {
+        user: result.user,
+        token: result.token,
+      },
     });
   } catch (error) {
     if (error.statusCode) {
@@ -64,12 +82,33 @@ export const login = async (req, res, next) => {
 };
 
 /**
- * Controller: Logout
+ * Controller: Retrieve currently authenticated user profile
+ * GET /api/auth/me
+ */
+export const getMe = async (req, res, next) => {
+  try {
+    return successResponse(res, {
+      statusCode: 200,
+      message: 'Current authenticated student profile',
+      data: {
+        user: req.user.toJSON(),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Controller: Logout and clear session cookie
  * POST /api/auth/logout
  */
 export const logout = async (req, res, next) => {
   try {
     const result = await authService.logout();
+
+    // Clear HttpOnly authentication cookie
+    clearAuthCookie(res);
 
     return successResponse(res, {
       statusCode: 200,

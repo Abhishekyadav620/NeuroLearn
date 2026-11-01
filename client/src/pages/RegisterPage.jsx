@@ -23,7 +23,7 @@ import Badge from '../components/ui/Badge.jsx';
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { register } = useAuth();
 
   // Form State
   const [formData, setFormData] = useState({
@@ -163,7 +163,7 @@ export const RegisterPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await authService.registerUser({
+      const response = await register({
         fullName: formData.fullName.trim(),
         username: formData.username.trim(),
         email: formData.email.trim(),
@@ -171,20 +171,13 @@ export const RegisterPage = () => {
       });
 
       setApiSuccess(
-        response.message || 'Account created successfully! Welcome to NeuroLearn.'
+        `Welcome to NeuroLearn, ${response.data?.user?.fullName || 'Student'}! Setting up your workspace...`
       );
 
-      // Store student auth session in context and localStorage
-      if (response.data?.user && response.data?.token) {
-        login(response.data.user, response.data.token);
-      }
-
-      // Smooth transition to login or dashboard preview after 1.5 seconds
+      // Transition to authenticated student dashboard
       setTimeout(() => {
-        navigate('/login', {
-          state: { registeredEmail: formData.email.trim(), successMsg: 'Account created! Please sign in.' },
-        });
-      }, 1500);
+        navigate('/dashboard', { replace: true });
+      }, 900);
     } catch (err) {
       setApiError(
         err.message || 'Registration failed. Please check your information and try again.'

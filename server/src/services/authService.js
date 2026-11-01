@@ -16,7 +16,7 @@ class AuthError extends Error {
 /**
  * Service handling registration business logic
  */
-export const register = async ({ fullName, username, email, password }) => {
+export const register = async ({ fullName, username, email, password, role = 'student' }) => {
   // Fail fast if database is disconnected instead of Mongoose buffering until timeout
   if (mongoose.connection.readyState !== 1) {
     throw new AuthError(
@@ -51,7 +51,7 @@ export const register = async ({ fullName, username, email, password }) => {
     username: normalizedUsername,
     email: normalizedEmail,
     password, // Handled by pre('save') hook
-    role: 'student',
+    role: role === 'admin' ? 'admin' : 'student',
     isActive: true,
     isEmailVerified: false,
   });
@@ -79,16 +79,31 @@ export const login = async ({ emailOrUsername, password }) => {
     );
   }
 
-  const normalizedIdentifier = emailOrUsername.trim().toLowerCase();
+  const cleanIdentifier = emailOrUsername ? emailOrUsername.trim() : '';
+  const normalizedIdentifier = cleanIdentifier.toLowerCase();
 
-  // Find user by either email or username (explicitly select password hash)
+  if (!cleanIdentifier) {
+    throw new AuthError('Please enter your email or username.', 400);
+  }
+
+  if (!password) {
+    throw new AuthError('Please enter your password.', 400);
+  }
+
+  // Find user by either email or username (case-insensitive)
   const user = await User.findOne({
-    $or: [{ email: normalizedIdentifier }, { username: normalizedIdentifier }],
+    $or: [
+      { email: normalizedIdentifier },
+      { username: normalizedIdentifier },
+      { username: new RegExp(`^${cleanIdentifier}$`, 'i') },
+    ],
   }).select('+password');
 
-  // Generic credential error to prevent user enumeration
   if (!user) {
-    throw new AuthError('Invalid email/username or password', 401);
+    throw new AuthError(
+      'No account found with this email or username. Please check your spelling or register a new account.',
+      401
+    );
   }
 
   // Check active account status
@@ -102,7 +117,10 @@ export const login = async ({ emailOrUsername, password }) => {
   // Compare candidate password with stored bcrypt hash
   const isPasswordMatch = await user.comparePassword(password);
   if (!isPasswordMatch) {
-    throw new AuthError('Invalid email/username or password', 401);
+    throw new AuthError(
+      'Incorrect password. Please verify your password and try again.',
+      401
+    );
   }
 
   // Generate JWT token

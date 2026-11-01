@@ -110,7 +110,7 @@ export const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await authService.loginUser({
+      const response = await login({
         emailOrUsername: formData.emailOrUsername.trim(),
         password: formData.password,
       });
@@ -119,15 +119,11 @@ export const LoginPage = () => {
         `Welcome back, ${response.data?.user?.fullName || 'Student'}! Signing you in...`
       );
 
-      // Save auth state in context and localStorage
-      if (response.data?.user && response.data?.token) {
-        login(response.data.user, response.data.token);
-      }
-
-      // Smooth redirection to dashboard
+      // Preserve previously attempted route or navigate to dashboard
+      const destination = location.state?.from?.pathname || '/dashboard';
       setTimeout(() => {
-        navigate('/dashboard');
-      }, 1200);
+        navigate(destination, { replace: true });
+      }, 700);
     } catch (err) {
       setApiError(
         err.message || 'Invalid credentials. Please verify your email/username and password.'
@@ -227,16 +223,53 @@ export const LoginPage = () => {
               </p>
             </div>
 
+            {/* Default Admin / Quick Credentials Pill */}
+            <div className="p-3 rounded-2xl bg-neuro-lavender/40 border border-neuro-purple/20 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-neuro-purple shrink-0" />
+                <span className="text-neuro-textMuted text-[11px]">
+                  Default Admin: <strong className="text-neuro-text">admin@neurolearn.ai</strong>
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData({
+                    emailOrUsername: 'admin@neurolearn.ai',
+                    password: 'Admin@123',
+                    rememberMe: true,
+                  });
+                  setErrors({});
+                  setApiError(null);
+                }}
+                className="text-[11px] font-bold text-neuro-purple hover:underline bg-white px-2.5 py-1 rounded-lg border border-neuro-purple/20 shadow-sm transition-all"
+              >
+                Autofill Demo
+              </button>
+            </div>
+
             {/* API Error / Success Banners */}
             {apiError && (
-              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-2.5">
+              <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-2.5">
                 <AlertCircle className="w-4 h-4 mt-0.5 shrink-0 text-rose-500" />
-                <span>{apiError}</span>
+                <div className="space-y-0.5">
+                  <p className="font-semibold">{apiError}</p>
+                  {apiError.toLowerCase().includes('password') && (
+                    <p className="text-[11px] text-rose-600">
+                      Passwords are case-sensitive. Please check if Caps Lock is active.
+                    </p>
+                  )}
+                  {apiError.toLowerCase().includes('no account') && (
+                    <p className="text-[11px] text-rose-600">
+                      Don't have an account yet? <Link to="/register" className="font-bold underline">Create one now</Link>.
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
             {apiSuccess && (
-              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-700 flex items-start gap-2.5">
+              <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-700 flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-emerald-600" />
                 <span>{apiSuccess}</span>
               </div>

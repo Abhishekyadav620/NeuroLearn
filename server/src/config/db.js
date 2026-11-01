@@ -53,21 +53,41 @@ export const connectDB = async () => {
         logger.info('Initializing automated embedded MongoDB database for local development...');
 
         const { MongoMemoryServer } = await import('mongodb-memory-server');
-        
-        // Attempt to bind on default port 27017 first
+        const fs = await import('fs');
+        const path = await import('path');
+        const { fileURLToPath } = await import('url');
+
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        const dataDir = path.resolve(__dirname, '../../../.mongo_data');
+
+        if (!fs.existsSync(dataDir)) {
+          fs.mkdirSync(dataDir, { recursive: true });
+        }
+
+        // Attempt to bind on default port 27017 first with disk persistence
         try {
           memoryServerInstance = await MongoMemoryServer.create({
-            instance: { port: 27017, dbName: 'neurolearn' },
+            instance: {
+              port: 27017,
+              dbName: 'neurolearn',
+              dbPath: dataDir,
+              storageEngine: 'wiredTiger',
+            },
           });
         } catch {
           // Fallback to dynamic local port if 27017 is occupied
           memoryServerInstance = await MongoMemoryServer.create({
-            instance: { dbName: 'neurolearn' },
+            instance: {
+              dbName: 'neurolearn',
+              dbPath: dataDir,
+              storageEngine: 'wiredTiger',
+            },
           });
         }
 
         activeDatabaseUri = memoryServerInstance.getUri();
-        logger.success(`Embedded MongoDB active at: ${activeDatabaseUri}`);
+        logger.success(`Persistent Embedded MongoDB active at: ${activeDatabaseUri} (data stored in ${dataDir})`);
 
         const conn = await mongoose.connect(activeDatabaseUri);
         lastError = null;

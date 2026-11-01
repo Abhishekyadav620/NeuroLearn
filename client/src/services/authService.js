@@ -2,6 +2,7 @@ import apiClient from './api.js';
 
 /**
  * Authentication Service for NeuroLearn Frontend
+ * Utilizing secure HttpOnly Cookie-based sessions
  */
 export const authService = {
   /**
@@ -23,36 +24,26 @@ export const authService = {
   },
 
   /**
-   * Logout the current user
+   * Retrieve currently authenticated user session from backend
+   * Validates HttpOnly cookie
+   */
+  async getCurrentUser() {
+    const response = await apiClient.get('/auth/me');
+    return response.data;
+  },
+
+  /**
+   * Logout the current user and invalidate HttpOnly cookie on backend
    */
   async logoutUser() {
     try {
       const response = await apiClient.post('/auth/logout');
       return response.data;
     } finally {
-      // Clear token and user from localStorage on client side
-      localStorage.removeItem('neurolearn_token');
+      // Clear legacy storage items if any remain
       localStorage.removeItem('neurolearn_user');
+      localStorage.removeItem('neurolearn_token');
     }
-  },
-
-  /**
-   * Helper to retrieve currently stored user from localStorage
-   */
-  getCurrentUser() {
-    try {
-      const raw = localStorage.getItem('neurolearn_user');
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
-  },
-
-  /**
-   * Helper to check if a token is stored
-   */
-  isAuthenticated() {
-    return !!localStorage.getItem('neurolearn_token');
   },
 };
 

@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import { ENV } from './config/env.js';
 import { requestLogger } from './middleware/requestLogger.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
@@ -13,12 +14,17 @@ const app = express();
 // Security HTTP headers
 app.use(helmet());
 
-// CORS Configuration
+// CORS Configuration with Credentials support for HttpOnly Cookies
+const allowedOrigins = [
+  ENV.CLIENT_URL,
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+];
+
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (e.g. mobile apps, curl, server-to-server) or matching CLIENT_URL
-    if (!origin || origin === ENV.CLIENT_URL || ENV.IS_DEVELOPMENT) {
-      return callback(null, true);
+    if (!origin || allowedOrigins.includes(origin) || ENV.IS_DEVELOPMENT) {
+      return callback(null, origin || true);
     }
     return callback(new Error(`CORS policy does not allow access from origin: ${origin}`));
   },
@@ -30,6 +36,9 @@ app.use(cors(corsOptions));
 
 // HTTP Request Logging
 app.use(requestLogger);
+
+// Cookie Parser Middleware
+app.use(cookieParser());
 
 // Body Parsing Middleware
 app.use(express.json({ limit: '10mb' }));

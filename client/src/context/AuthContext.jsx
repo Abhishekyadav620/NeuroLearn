@@ -1,88 +1,92 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import authService from '../services/authService.js';
 
 const AuthContext = createContext({
   user: null,
-  token: null,
+  loading: true,
   isAuthenticated: false,
-  login: () => {},
-  logout: () => {},
-  updateUser: () => {},
+  error: null,
+  login: async () => {},
+  register: async () => {},
+  logout: async () => {},
+  checkAuth: async () => {},
 });
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Session verification: checks HttpOnly cookie session on /api/auth/me
+  const checkAuth = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const stored = localStorage.getItem('neurolearn_user');
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
-
-  const [token, setToken] = useState(() => {
-    return localStorage.getItem('neurolearn_token') || null;
-  });
-
-  // Keep state synchronized with localStorage
-  useEffect(() => {
-    const handleStorageChange = () => {
-      try {
-        const storedUser = localStorage.getItem('neurolearn_user');
-        const storedToken = localStorage.getItem('neurolearn_token');
-        setUser(storedUser ? JSON.parse(storedUser) : null);
-        setToken(storedToken || null);
-      } catch {
+      const response = await authService.getCurrentUser();
+      if (response.success && response.data?.user) {
+        setUser(response.data.user);
+      } else {
         setUser(null);
-        setToken(null);
       }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    } catch (err) {
+      // 401 or network error means no active session
+      setUser(null);
+      if (err.status !== 401) {
+        setError(err.message || 'Session verification error');
+      }
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const login = (userData, userToken) => {
-    if (userData) {
-      setUser(userData);
-      localStorage.setItem('neurolearn_user', JSON.stringify(userData));
+  // Run session verification on application mount
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  // Login action: delegates to backend and updates authenticated user
+  const login = async (credentials) => {
+    setError(null);
+    const response = await authService.loginUser(credentials);
+    if (response.success && response.data?.user) {
+      setUser(response.data.user);
     }
-    if (userToken) {
-      setToken(userToken);
-      localStorage.setItem('neurolearn_token', userToken);
-    }
+    return response;
   };
 
+  // Register action: creates student and auto-authenticates via HttpOnly cookie
+  const register = async (userData) => {
+    setError(null);
+    const response = await authService.registerUser(userData);
+    if (response.success && response.data?.user) {
+      setUser(response.data.user);
+    }
+    return response;
+  };
+
+  // Logout action: clears server-side HttpOnly cookie and resets state
   const logout = async () => {
     try {
       await authService.logoutUser();
-    } catch {
-      // Continue client cleanup even if logout request fails
+    } catch (err) {
+      console.warn('Logout request completed with notice:', err.message);
     } finally {
       setUser(null);
-      setToken(null);
-      localStorage.removeItem('neurolearn_user');
-      localStorage.removeItem('neurolearn_token');
+      setError(null);
     }
-  };
-
-  const updateUser = (updatedData) => {
-    setUser((prev) => {
-      const merged = { ...prev, ...updatedData };
-      localStorage.setItem('neurolearn_user', JSON.stringify(merged));
-      return merged;
-    });
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        token,
-        isAuthenticated: !!(user && token),
+        loading,
+        isAuthenticated: !!user,
+        error,
         login,
+        register,
         logout,
-        updateUser,
+        checkAuth,
       }}
     >
       {children}

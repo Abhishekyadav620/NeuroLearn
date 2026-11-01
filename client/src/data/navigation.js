@@ -1,6 +1,9 @@
 export const NAV_LINKS = [
-  { name: 'Overview', path: '/' },
-  { name: 'Student Dashboard', path: '/dashboard' },
+  { name: 'Overview', path: '/', publicOnly: true },
+  { name: 'Courses', path: '/courses' },
+  { name: 'My Courses', path: '/my-courses', protected: true },
+  { name: 'Analytics', path: '/analytics', protected: true },
+  { name: 'Dashboard', path: '/dashboard', protected: true },
 ];
 
 export const CORE_SIGNALS = [
