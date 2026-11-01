@@ -1,24 +1,30 @@
 import axios from 'axios';
 
-// Base API URL with fallback
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+// Base API URL with environment variable fallbacks
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  import.meta.env.VITE_API_BASE_URL ||
+  '/api';
 
 /**
  * Pre-configured Axios instance for the NeuroLearn client
  */
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 8000,
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
 });
 
-// Request interceptor for logging or future JWT auth headers
+// Request interceptor for attaching bearer token if present
 apiClient.interceptors.request.use(
   (config) => {
-    // In future milestones, attach JWT token if present in localStorage/cookies
+    const token = localStorage.getItem('neurolearn_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {

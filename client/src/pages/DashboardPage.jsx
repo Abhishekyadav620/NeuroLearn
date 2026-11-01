@@ -6,7 +6,6 @@ import {
   BookOpen,
   Zap,
   TrendingUp,
-  ShieldAlert,
   Sliders,
   CheckCircle,
 } from 'lucide-react';
@@ -36,15 +35,15 @@ const MOCK_TELEMETRY_SERIES = [
 
 export const DashboardPage = () => {
   return (
-    <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+    <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8 bg-neuro-bg">
       {/* Top Banner / Session Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-card-border">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-neuro-border">
         <div>
           <div className="flex items-center gap-2">
             <Badge variant="purple">Student Workspace</Badge>
             <Badge variant="success">Adaptive Telemetry Active</Badge>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mt-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-neuro-text mt-2">
             Cognitive Flow & Learning Analytics
           </h1>
           <p className="text-xs sm:text-sm text-neuro-textMuted mt-1">
@@ -53,7 +52,7 @@ export const DashboardPage = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="secondary" size="sm" icon={Sliders}>
+          <Button variant="outline" size="sm" icon={Sliders}>
             Preferences
           </Button>
           <Button variant="primary" size="sm" icon={Brain}>
@@ -67,10 +66,10 @@ export const DashboardPage = () => {
         <Card className="space-y-2">
           <div className="flex items-center justify-between text-xs text-neuro-textMuted">
             <span>Engagement Index</span>
-            <TrendingUp className="w-4 h-4 text-emerald-400" />
+            <TrendingUp className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-2xl font-bold text-white">84%</div>
-          <p className="text-[11px] text-emerald-400 flex items-center gap-1">
+          <div className="text-2xl font-bold text-neuro-text">84%</div>
+          <p className="text-[11px] text-emerald-600 flex items-center gap-1">
             <span>Optimal cognitive absorption zone</span>
           </p>
         </Card>
@@ -78,9 +77,9 @@ export const DashboardPage = () => {
         <Card className="space-y-2">
           <div className="flex items-center justify-between text-xs text-neuro-textMuted">
             <span>Current State</span>
-            <Zap className="w-4 h-4 text-neuro-purpleLight" />
+            <Zap className="w-4 h-4 text-neuro-purple" />
           </div>
-          <div className="text-2xl font-bold text-neuro-purpleLight">Focused Flow</div>
+          <div className="text-2xl font-bold text-neuro-purple">Focused Flow</div>
           <p className="text-[11px] text-neuro-textMuted">
             Predicted by behavioral signal classifier
           </p>
@@ -89,9 +88,9 @@ export const DashboardPage = () => {
         <Card className="space-y-2">
           <div className="flex items-center justify-between text-xs text-neuro-textMuted">
             <span>Active Module</span>
-            <BookOpen className="w-4 h-4 text-neuro-pink" />
+            <BookOpen className="w-4 h-4 text-violet-600" />
           </div>
-          <div className="text-2xl font-bold text-white">Neural Net Basics</div>
+          <div className="text-2xl font-bold text-neuro-text">Neural Net Basics</div>
           <p className="text-[11px] text-neuro-textMuted">
             Chunk 3 of 7 • Micro-lesson pacing
           </p>
@@ -100,9 +99,9 @@ export const DashboardPage = () => {
         <Card className="space-y-2">
           <div className="flex items-center justify-between text-xs text-neuro-textMuted">
             <span>Session Pacing</span>
-            <Clock className="w-4 h-4 text-violet-400" />
+            <Clock className="w-4 h-4 text-neuro-purpleLight" />
           </div>
-          <div className="text-2xl font-bold text-white">28 min</div>
+          <div className="text-2xl font-bold text-neuro-text">28 min</div>
           <p className="text-[11px] text-neuro-textMuted">
             Break suggested in 12 min
           </p>
@@ -113,7 +112,7 @@ export const DashboardPage = () => {
       <Card className="space-y-4">
         <CardHeader
           title="Cognitive Engagement & Drift Probability (Telemetry Preview)"
-          subtitle="Validating Recharts integration on the dark purple design theme"
+          subtitle="Validating Recharts integration on clean lavender SaaS theme"
           action={<Badge variant="purple">Recharts Verified</Badge>}
         />
 
@@ -122,23 +121,24 @@ export const DashboardPage = () => {
             <AreaChart data={MOCK_TELEMETRY_SERIES} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="purpleGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.4} />
+                  <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.3} />
                   <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.0} />
                 </linearGradient>
                 <linearGradient id="pinkGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#EC4899" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#EC4899" stopOpacity={0.0} />
+                  <stop offset="5%" stopColor="#A78BFA" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="#A78BFA" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
-              <XAxis dataKey="time" stroke="#9CA3AF" fontSize={11} tickLine={false} />
-              <YAxis stroke="#9CA3AF" fontSize={11} tickLine={false} domain={[0, 100]} />
+              <XAxis dataKey="time" stroke="#77788A" fontSize={11} tickLine={false} />
+              <YAxis stroke="#77788A" fontSize={11} tickLine={false} domain={[0, 100]} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#19192F',
-                  borderColor: '#232340',
+                  backgroundColor: '#FFFFFF',
+                  borderColor: '#ECECF2',
                   borderRadius: '0.75rem',
                   fontSize: '12px',
-                  color: '#F8FAFC',
+                  color: '#202033',
+                  boxShadow: '0 4px 20px -2px rgba(32, 32, 51, 0.08)',
                 }}
               />
               <Area
@@ -154,7 +154,7 @@ export const DashboardPage = () => {
                 type="monotone"
                 dataKey="driftProbability"
                 name="Drift Risk %"
-                stroke="#EC4899"
+                stroke="#A78BFA"
                 strokeWidth={2}
                 fillOpacity={1}
                 fill="url(#pinkGrad)"
@@ -175,12 +175,12 @@ export const DashboardPage = () => {
             {CORE_SIGNALS.map((signal) => (
               <div
                 key={signal.id}
-                className="flex items-center justify-between p-3 rounded-xl bg-neuro-elevated/50 border border-white/5 text-xs"
+                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-neuro-border text-xs"
               >
                 <div className="flex items-center gap-2.5">
-                  <Activity className="w-4 h-4 text-neuro-purpleLight" />
+                  <Activity className="w-4 h-4 text-neuro-purple" />
                   <div>
-                    <span className="font-semibold text-white">{signal.title}</span>
+                    <span className="font-semibold text-neuro-text">{signal.title}</span>
                     <p className="text-[11px] text-neuro-textMuted">{signal.badge}</p>
                   </div>
                 </div>
@@ -192,42 +192,42 @@ export const DashboardPage = () => {
           </div>
         </Card>
 
-        <Card elevated className="border-neuro-purple/30 flex flex-col justify-between">
+        <Card elevated className="border-neuro-purple/20 flex flex-col justify-between">
           <div>
             <CardHeader
-              title="Milestone 1 Architecture State"
-              subtitle="Foundation readiness verification"
+              title="Authentication & Telemetry Integration"
+              subtitle="Production architecture status"
             />
             <div className="space-y-3 text-xs text-neuro-textMuted">
               <div className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
                 <span>
-                  <strong className="text-white">Clean Monorepo:</strong> Separate client and server directories with single-command orchestrations.
+                  <strong className="text-neuro-text">Clean Light SaaS Palette:</strong> Predominantly white and very light grey surfaces (#F8F9FC, #FFFFFF) with lavender accents.
                 </span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
                 <span>
-                  <strong className="text-white">Design Tokens:</strong> Dark purple theme (#0B0B16, #111124, #19192F, #8B5CF6, #EC4899).
+                  <strong className="text-neuro-text">Registration Module:</strong> Split-screen layout with live password strength bar and validation.
                 </span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
                 <span>
-                  <strong className="text-white">Health Telemetry:</strong> Diagnostic endpoints at /api/health and /api/health/db.
+                  <strong className="text-neuro-text">Login Module:</strong> Secure login with bcryptjs comparison, JWT token issuance, and remember-me UI.
                 </span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
                 <span>
-                  <strong className="text-white">Routing Foundation:</strong> Reusable Navbar and MainLayout with public & student routes.
+                  <strong className="text-neuro-text">Rate Limiter & Security:</strong> express-rate-limit brute force protection on /api/auth/*.
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-white/10 text-xs text-neuro-textMuted">
-            <span className="text-neuro-purpleLight font-medium">Ready for Milestone 2:</span> Interactive adaptive learning player, real session tracking, and ML model inference integrations.
+          <div className="mt-6 pt-4 border-t border-neuro-border text-xs text-neuro-textMuted">
+            <span className="text-neuro-purple font-medium">Ready for Milestone 5:</span> Protected frontend route wrappers and authenticated session state providers.
           </div>
         </Card>
       </div>

@@ -1,12 +1,12 @@
 import React from 'react';
 
 const VARIANTS = {
-  purple: 'bg-neuro-purple/10 text-neuro-purpleLight border-neuro-purple/30',
-  pink: 'bg-neuro-pink/10 text-pink-400 border-neuro-pink/30',
-  success: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-  warning: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
-  danger: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
-  neutral: 'bg-neuro-elevated text-neuro-textMuted border-white/10',
+  purple: 'bg-neuro-lavender text-neuro-purple border-neuro-purple/20',
+  pink: 'bg-pink-50 text-pink-600 border-pink-200',
+  success: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  warning: 'bg-amber-50 text-amber-700 border-amber-200',
+  danger: 'bg-rose-50 text-rose-700 border-rose-200',
+  neutral: 'bg-slate-100 text-neuro-textMuted border-slate-200',
 };
 
 export const Badge = ({ children, variant = 'purple', className = '' }) => {

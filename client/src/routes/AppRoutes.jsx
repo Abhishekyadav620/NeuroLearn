@@ -3,6 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout.jsx';
 import LandingPage from '../pages/LandingPage.jsx';
 import DashboardPage from '../pages/DashboardPage.jsx';
+import LoginPage from '../pages/LoginPage.jsx';
+import RegisterPage from '../pages/RegisterPage.jsx';
 import NotFoundPage from '../pages/NotFoundPage.jsx';
 
 /**
@@ -17,7 +19,11 @@ export const AppRoutes = () => {
         {/* Landing / Overview Page */}
         <Route path="/" element={<LandingPage />} />
 
-        {/* Student Dashboard Placeholder */}
+        {/* Authentication Routes */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+
+        {/* Student Dashboard */}
         <Route path="/dashboard" element={<DashboardPage />} />
 
         {/* Catch-all 404 Route */}

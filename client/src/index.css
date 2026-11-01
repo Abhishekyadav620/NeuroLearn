@@ -4,12 +4,12 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
-    background-color: #0B0B16;
-    color: #F8FAFC;
+    background-color: #F8F9FC;
+    color: #202033;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
@@ -18,31 +18,40 @@
 
 /* Custom subtle scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0B0B16;
+  background: #F8F9FC;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #232340;
-  border-radius: 4px;
+  background: #E2E4EB;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #8B5CF6;
+  background: #A78BFA;
 }
 
-/* Glassmorphism / subtle card utility classes */
-.glass-panel {
-  background: rgba(25, 25, 47, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(167, 139, 250, 0.12);
+/* Subtle clean SaaS utility classes */
+.saas-card {
+  background: #FFFFFF;
+  border: 1px solid #ECECF2;
+  box-shadow: 0 4px 20px -2px rgba(32, 32, 51, 0.04), 0 2px 6px -1px rgba(32, 32, 51, 0.02);
+  border-radius: 1rem;
 }
 
-.gradient-border {
-  position: relative;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.1));
+.saas-input {
+  background: #FFFFFF;
+  border: 1px solid #ECECF2;
+  color: #202033;
+  transition: all 0.2s ease-in-out;
+}
+
+.saas-input:focus {
+  border-color: #8B5CF6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
 }

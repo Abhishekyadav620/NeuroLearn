@@ -306,28 +306,110 @@ All API responses follow a uniform, predictable JSON envelope.
 }
 ```
 
+### 3. Student Registration
+- **Endpoint:** `POST /api/auth/register`
+- **Rate Limit:** 30 requests per 15 minutes
+- **Request Body:**
+```json
+{
+  "fullName": "Demo Student",
+  "username": "demostudent",
+  "email": "demo@example.com",
+  "password": "SecurePassword@123"
+}
+```
+- **Sample Success Response (HTTP 201 Created):**
+```json
+{
+  "success": true,
+  "message": "Account created successfully",
+  "timestamp": "2026-11-01T12:00:00.000Z",
+  "data": {
+    "user": {
+      "_id": "6ae731e94f543e2f233bc832",
+      "fullName": "Demo Student",
+      "username": "demostudent",
+      "email": "demo@example.com",
+      "role": "student",
+      "profileImage": "",
+      "isEmailVerified": false,
+      "isActive": true,
+      "createdAt": "2026-11-01T12:00:00.000Z",
+      "updatedAt": "2026-11-01T12:00:00.000Z"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+}
+```
+
+### 4. Student Login
+- **Endpoint:** `POST /api/auth/login`
+- **Rate Limit:** 30 requests per 15 minutes
+- **Request Body:**
+```json
+{
+  "emailOrUsername": "demostudent",
+  "password": "SecurePassword@123"
+}
+```
+- **Sample Success Response (HTTP 200 OK):**
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "timestamp": "2026-11-01T12:00:00.000Z",
+  "data": {
+    "user": {
+      "_id": "6ae731e94f543e2f233bc832",
+      "fullName": "Demo Student",
+      "username": "demostudent",
+      "email": "demo@example.com",
+      "role": "student",
+      "isActive": true
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+}
+```
+
+### 5. Student Logout
+- **Endpoint:** `POST /api/auth/logout`
+- **Description:** Acknowledges client-side stateless token clearing and documents future token blacklisting extensions.
+- **Sample Response (HTTP 200 OK):**
+```json
+{
+  "success": true,
+  "message": "Logged out successfully",
+  "timestamp": "2026-11-01T12:00:00.000Z",
+  "data": {
+    "note": "Stateless JWT logout: Client should clear the stored Bearer token from local storage or cookie."
+  }
+}
+```
+
 ---
 
-## 11. Current Implementation Status (Milestone 1)
+## 11. Current Implementation Status
 
 - [x] Clean Monorepo directory structure (`client/`, `server/`).
 - [x] Express backend configured with ES Modules, Helmet, CORS, and Morgan.
-- [x] Reusable Mongoose connection lifecycle manager with offline/standby resilience.
-- [x] Standardized API response formatters and centralized error handling middleware.
+- [x] Light SaaS Design System (`#F8F9FC`, `#FFFFFF`, `#8B5CF6`, `#F1ECFF`, `#202033`).
 - [x] Diagnostic health endpoints (`/api/health` and `/api/health/db`).
-- [x] React + Vite frontend configured with Tailwind CSS and Inter typography.
-- [x] Dark-purple SaaS design system tokens (`#0B0B16`, `#19192F`, `#8B5CF6`, `#EC4899`).
-- [x] Reusable component library (`Button`, `Card`, `Badge`, `Navbar`, `Footer`, `MainLayout`).
-- [x] React Router DOM foundation with `/` (Overview) and `/dashboard` (Student Analytics).
-- [x] Real-time diagnostic telemetry hook (`useHealthCheck`) pinging the backend API.
-- [x] Concurrently root scripts for single-command full-stack development (`npm run dev`).
+- [x] Mongoose User Model with bcryptjs password hashing and password hash protection (`User.js`).
+- [x] Authentication controllers, services, and route validators (`/api/auth/*`).
+- [x] Cryptographic JWT token generation utility with user ID and role payload.
+- [x] Brute-force rate limiting protection via `express-rate-limit`.
+- [x] Registration split-screen UI (`/register`) with real-time password strength analyzer.
+- [x] Login split-screen UI (`/login`) with credential validation and password toggle.
+- [x] Reusable Axios authentication service (`authService.js`).
+- [x] ErrorBoundary component preventing blank screens on unhandled client exceptions.
 
 ---
 
 ## 12. Future Development Roadmap
 
-- **Milestone 2:** Adaptive Learning Player, interactive module chunking, live behavioral event listeners (scrolling velocity, mouse trajectory, dwell time).
-- **Milestone 3:** Machine Learning state prediction engine integration (predicting cognitive flow, boredom, confusion, and attention drift).
-- **Milestone 4:** Adaptive Intervention Engine (automatic content summarization, pulse quiz generation, pace adjustment).
-- **Milestone 5:** User Authentication (JWT, bcryptjs), student progress persistence, and privacy consent management portal.
-- **Milestone 6:** Educator/Researcher Analytics Dashboard with longitudinal cognitive flow reports.
+- **Milestone 5:** Protected Frontend Route Guards (`ProtectedRoute`), persistent auth session context, and student state hydration.
+- **Milestone 6:** Adaptive Learning Player, interactive module chunking, live behavioral event listeners (scrolling velocity, mouse trajectory, dwell time).
+- **Milestone 7:** Machine Learning state prediction engine integration (predicting cognitive flow, boredom, confusion, and attention drift).
+- **Milestone 8:** Adaptive Intervention Engine (automatic content summarization, pulse quiz generation, pace adjustment).
+- **Milestone 9:** Educator/Researcher Analytics Dashboard with longitudinal cognitive flow reports.

@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Brain, Menu, X, Activity, Database, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Brain, Menu, X, Activity, Database, LogIn, UserPlus } from 'lucide-react';
 import { NAV_LINKS } from '../../data/navigation.js';
 import useHealthCheck from '../../hooks/useHealthCheck.js';
-import Badge from '../ui/Badge.jsx';
 
 export const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -13,21 +12,19 @@ export const Navbar = () => {
   const isDbHealthy = !loading && dbData?.connected;
 
   return (
-    <header className="sticky top-0 z-50 bg-neuro-bg/80 backdrop-blur-md border-b border-card-border">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-neuro-border shadow-subtle">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-neuro-purple to-neuro-pink p-0.5 shadow-soft-purple group-hover:scale-105 transition-transform duration-200">
-              <div className="w-full h-full bg-neuro-card rounded-[10px] flex items-center justify-center">
-                <Brain className="w-5 h-5 text-neuro-purpleLight" />
-              </div>
+            <div className="w-9 h-9 rounded-xl bg-neuro-lavender flex items-center justify-center text-neuro-purple border border-neuro-purple/20 shadow-subtle group-hover:scale-105 transition-transform duration-200">
+              <Brain className="w-5 h-5 text-neuro-purple" />
             </div>
-            <div>
-              <span className="text-xl font-bold bg-gradient-to-r from-white via-slate-100 to-neuro-purpleLight bg-clip-text text-transparent">
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-bold text-neuro-text tracking-tight">
                 NeuroLearn
               </span>
-              <span className="hidden sm:inline-block ml-2 text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded bg-neuro-purple/15 text-neuro-purpleLight border border-neuro-purple/30">
+              <span className="hidden sm:inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full bg-neuro-lavender text-neuro-purple border border-neuro-purple/15">
                 Adaptive AI
               </span>
             </div>
@@ -42,8 +39,8 @@ export const Navbar = () => {
                 className={({ isActive }) =>
                   `px-3.5 py-2 text-sm font-medium rounded-lg transition-all duration-150 ${
                     isActive
-                      ? 'text-white bg-neuro-elevated shadow-sm border border-card-border'
-                      : 'text-neuro-textMuted hover:text-white hover:bg-white/5'
+                      ? 'text-neuro-purple bg-neuro-lavender/60 font-semibold'
+                      : 'text-neuro-textMuted hover:text-neuro-text hover:bg-slate-50'
                   }`
                 }
               >
@@ -52,23 +49,23 @@ export const Navbar = () => {
             ))}
           </nav>
 
-          {/* System Status Indicators & Action */}
+          {/* System Telemetry & Auth Action Buttons */}
           <div className="hidden sm:flex items-center gap-3">
             {/* Live API & DB Indicator */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neuro-card border border-card-border text-xs">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-neuro-border text-xs">
               <span className="flex items-center gap-1.5 text-neuro-textMuted">
                 <Activity className="w-3.5 h-3.5 text-neuro-purple" />
                 API:
                 {loading ? (
                   <span className="text-slate-400">...</span>
                 ) : isApiHealthy ? (
-                  <span className="text-emerald-400 font-medium">Online</span>
+                  <span className="text-emerald-600 font-semibold">Online</span>
                 ) : (
-                  <span className="text-rose-400 font-medium">Offline</span>
+                  <span className="text-rose-500 font-semibold">Offline</span>
                 )}
               </span>
 
-              <span className="text-white/20">|</span>
+              <span className="text-slate-300">|</span>
 
               <span className="flex items-center gap-1.5 text-neuro-textMuted">
                 <Database className="w-3.5 h-3.5 text-neuro-purpleLight" />
@@ -76,18 +73,28 @@ export const Navbar = () => {
                 {loading ? (
                   <span className="text-slate-400">...</span>
                 ) : isDbHealthy ? (
-                  <span className="text-emerald-400 font-medium">Ready</span>
+                  <span className="text-emerald-600 font-semibold">Ready</span>
                 ) : (
-                  <span className="text-amber-400 font-medium" title="Configure MONGODB_URI in server/.env">Standby</span>
+                  <span className="text-amber-500 font-semibold">Standby</span>
                 )}
               </span>
             </div>
 
+            {/* Auth Buttons */}
             <Link
-              to="/dashboard"
-              className="px-4 py-2 text-xs font-semibold rounded-lg bg-neuro-purple hover:bg-violet-600 text-white transition-colors shadow-soft-purple"
+              to="/login"
+              className="px-3.5 py-2 text-xs font-semibold text-neuro-text hover:text-neuro-purple transition-colors flex items-center gap-1.5"
             >
-              Open Dashboard
+              <LogIn className="w-3.5 h-3.5" />
+              Sign In
+            </Link>
+
+            <Link
+              to="/register"
+              className="px-4 py-2 text-xs font-semibold rounded-xl bg-neuro-purple hover:bg-neuro-purpleHover text-white transition-all shadow-purple-btn flex items-center gap-1.5"
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              Get Started
             </Link>
           </div>
 
@@ -95,7 +102,7 @@ export const Navbar = () => {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-neuro-textMuted hover:text-white hover:bg-neuro-card focus:outline-none"
+              className="p-2 rounded-lg text-neuro-textMuted hover:text-neuro-text hover:bg-slate-100 focus:outline-none"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -106,7 +113,7 @@ export const Navbar = () => {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-card-border bg-neuro-bgSecondary px-4 pt-3 pb-5 space-y-2">
+        <div className="md:hidden border-b border-neuro-border bg-white px-4 pt-3 pb-5 space-y-2">
           {NAV_LINKS.map((link) => (
             <NavLink
               key={link.path}
@@ -115,8 +122,8 @@ export const Navbar = () => {
               className={({ isActive }) =>
                 `block px-3 py-2 text-base font-medium rounded-lg ${
                   isActive
-                    ? 'text-white bg-neuro-elevated border border-card-border'
-                    : 'text-neuro-textMuted hover:text-white hover:bg-white/5'
+                    ? 'text-neuro-purple bg-neuro-lavender'
+                    : 'text-neuro-textMuted hover:text-neuro-text hover:bg-slate-50'
                 }`
               }
             >
@@ -124,9 +131,21 @@ export const Navbar = () => {
             </NavLink>
           ))}
 
-          <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-neuro-textMuted">
-            <span>API: {isApiHealthy ? '🟢 Online' : '🔴 Offline'}</span>
-            <span>DB: {isDbHealthy ? '🟢 Connected' : '🟡 Standby'}</span>
+          <div className="pt-3 border-t border-neuro-border flex flex-col gap-2">
+            <Link
+              to="/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block w-full py-2 text-center text-sm font-semibold text-neuro-text bg-slate-50 rounded-lg border border-neuro-border"
+            >
+              Sign In
+            </Link>
+            <Link
+              to="/register"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block w-full py-2 text-center text-sm font-semibold text-white bg-neuro-purple rounded-lg shadow-purple-btn"
+            >
+              Create Account
+            </Link>
           </div>
         </div>
       )}
