@@ -21,6 +21,7 @@ import Card, { CardHeader } from '../components/common/Card.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import Button from '../components/common/Button.jsx';
 import { CORE_SIGNALS } from '../data/navigation.js';
+import { useAuth } from '../context/AuthContext.jsx';
 
 // Sample telemetry time-series dataset to test Recharts functionality
 const MOCK_TELEMETRY_SERIES = [
@@ -34,17 +35,21 @@ const MOCK_TELEMETRY_SERIES = [
 ];
 
 export const DashboardPage = () => {
+  const { user } = useAuth();
+
   return (
     <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8 bg-neuro-bg">
       {/* Top Banner / Session Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-neuro-border">
         <div>
           <div className="flex items-center gap-2">
-            <Badge variant="purple">Student Workspace</Badge>
+            <Badge variant="purple">
+              {user ? `Student: ${user.fullName}` : 'Student Workspace'}
+            </Badge>
             <Badge variant="success">Adaptive Telemetry Active</Badge>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-neuro-text mt-2">
-            Cognitive Flow & Learning Analytics
+            {user ? `Welcome back, ${user.fullName}!` : 'Cognitive Flow & Learning Analytics'}
           </h1>
           <p className="text-xs sm:text-sm text-neuro-textMuted mt-1">
             Real-time behavioral telemetry monitoring and adaptive learning interventions.

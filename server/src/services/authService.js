@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 import { generateToken } from '../utils/generateToken.js';
 
@@ -16,6 +17,14 @@ class AuthError extends Error {
  * Service handling registration business logic
  */
 export const register = async ({ fullName, username, email, password }) => {
+  // Fail fast if database is disconnected instead of Mongoose buffering until timeout
+  if (mongoose.connection.readyState !== 1) {
+    throw new AuthError(
+      'Database service is currently initializing or unavailable. Please wait a moment and try again.',
+      503
+    );
+  }
+
   const normalizedEmail = email.trim().toLowerCase();
   const normalizedUsername = username.trim().toLowerCase();
   const trimmedName = fullName.trim();
@@ -62,6 +71,14 @@ export const register = async ({ fullName, username, email, password }) => {
  * Service handling login business logic
  */
 export const login = async ({ emailOrUsername, password }) => {
+  // Fail fast if database is disconnected instead of Mongoose buffering until timeout
+  if (mongoose.connection.readyState !== 1) {
+    throw new AuthError(
+      'Database service is currently initializing or unavailable. Please wait a moment and try again.',
+      503
+    );
+  }
+
   const normalizedIdentifier = emailOrUsername.trim().toLowerCase();
 
   // Find user by either email or username (explicitly select password hash)

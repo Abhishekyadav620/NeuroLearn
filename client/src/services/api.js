@@ -38,10 +38,21 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Format error message for consumption
+    let friendlyMessage = error.response?.data?.message;
+
+    if (!friendlyMessage) {
+      if (error.code === 'ECONNABORTED' || error.message?.toLowerCase().includes('timeout')) {
+        friendlyMessage = 'The request timed out. The database or server is taking longer than expected. Please try again.';
+      } else if (error.message === 'Network Error') {
+        friendlyMessage = 'Unable to connect to the backend server. Please verify that the API server is running on port 5000.';
+      } else {
+        friendlyMessage = error.message || 'An unexpected network error occurred';
+      }
+    }
+
     const customError = {
       status: error.response?.status || 500,
-      message: error.response?.data?.message || error.message || 'Network error occurred',
+      message: friendlyMessage,
       data: error.response?.data?.data || null,
       raw: error,
     };

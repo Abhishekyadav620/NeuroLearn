@@ -17,12 +17,14 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import authService from '../services/authService.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import Button from '../components/common/Button.jsx';
 import Badge from '../components/ui/Badge.jsx';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
 
   // If redirected from successful registration
   const prefillEmail = location.state?.registeredEmail || '';
@@ -117,12 +119,9 @@ export const LoginPage = () => {
         `Welcome back, ${response.data?.user?.fullName || 'Student'}! Signing you in...`
       );
 
-      // Save token & user in localStorage
-      if (response.data?.token) {
-        localStorage.setItem('neurolearn_token', response.data.token);
-      }
-      if (response.data?.user) {
-        localStorage.setItem('neurolearn_user', JSON.stringify(response.data.user));
+      // Save auth state in context and localStorage
+      if (response.data?.user && response.data?.token) {
+        login(response.data.user, response.data.token);
       }
 
       // Smooth redirection to dashboard

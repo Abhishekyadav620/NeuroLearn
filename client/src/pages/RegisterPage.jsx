@@ -17,11 +17,13 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import authService from '../services/authService.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import Button from '../components/common/Button.jsx';
 import Badge from '../components/ui/Badge.jsx';
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   // Form State
   const [formData, setFormData] = useState({
@@ -172,12 +174,9 @@ export const RegisterPage = () => {
         response.message || 'Account created successfully! Welcome to NeuroLearn.'
       );
 
-      // Store student auth session in localStorage for development convenience
-      if (response.data?.token) {
-        localStorage.setItem('neurolearn_token', response.data.token);
-      }
-      if (response.data?.user) {
-        localStorage.setItem('neurolearn_user', JSON.stringify(response.data.user));
+      // Store student auth session in context and localStorage
+      if (response.data?.user && response.data?.token) {
+        login(response.data.user, response.data.token);
       }
 
       // Smooth transition to login or dashboard preview after 1.5 seconds
